@@ -65,3 +65,6 @@ Registered:  David
 Exit mock caching middleware
 Exit mock logging middleware
 ```
+
+#### Why? 
+I've come to appreciate hexagonal architecture and was missing a package that would allow me to architect an app in such a way. Structuring an app using a command bus allows you to have several different client interfaces(http, cli, etc.) that are only responsible for creating command structs and sending them into the bus to be handled. A command only has a single handler but you can add as many middleware layers as needed, allowing to easily plug in logging, caching, authentication, etc.
