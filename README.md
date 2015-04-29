@@ -1,18 +1,18 @@
-CommandBus
+commandbus
 ==========
 
 #### Installation
 Make sure that Go is installed on your computer.
 Type the following command in your terminal:
 
-    go get github.com/dadamssg/CommandBus
+    go get github.com/dadamssg/commandbus
 
 After it the package is ready to use.
 
 #### Import package in your project
 Add following line in your `*.go` file:
 ```go
-import "github.com/dadamssg/CommandBus"
+import "github.com/dadamssg/commandbus"
 ```
 
 #### Example
@@ -21,7 +21,7 @@ package main
 
 import (
     "fmt"
-    "github.com/dadamssg/CommandBus"
+    "github.com/dadamssg/commandbus"
 )
 
 type RegisterUserCommand struct {
@@ -29,7 +29,7 @@ type RegisterUserCommand struct {
 }
 
 func main() {
-    bus := CommandBus.New()
+    bus := commandbus.New()
 
     bus.RegisterHandler(&RegisterUserCommand{}, func(cmd interface{}) {
         command, _ := cmd.(*RegisterUserCommand)
@@ -37,14 +37,14 @@ func main() {
     })
 
     // add a middleware with a priority of 0
-    bus.AddMiddleware(0, func(cmd interface{}, next CommandBus.HandlerFunc) {
+    bus.AddMiddleware(0, func(cmd interface{}, next commandbus.HandlerFunc) {
         fmt.Println("Enter mock caching middleware")
         next(cmd)
         fmt.Println("Exit mock caching middleware")
     })
 
     // add a middleware with a priority of 1
-    bus.AddMiddleware(1, func(cmd interface{}, next CommandBus.HandlerFunc) {
+    bus.AddMiddleware(1, func(cmd interface{}, next commandbus.HandlerFunc) {
         fmt.Println("Enter mock logging middleware")
         next(cmd)
         fmt.Println("Exit mock logging middleware")
@@ -67,4 +67,6 @@ Exit mock logging middleware
 ```
 
 #### Why? 
-I've come to appreciate hexagonal architecture and was missing a package that would allow me to architect an app in such a way. Structuring an app using a command bus allows you to have several different client interfaces(http, cli, etc.) that are only responsible for creating command structs and sending them into the bus to be handled. A command only has a single handler but you can add as many middleware layers as needed, allowing to easily plug in logging, caching, authentication, etc.
+I've come to appreciate hexagonal architecture and was missing a package that would allow me to architect an app in such a way. 
+
+Structuring an app using a command bus allows you to have several different client interfaces(http, cli, etc.) that are only responsible for creating command structs and sending them into the bus to be handled. A command only has a single handler but you can add as many middleware layers as needed, allowing to easily plug in logging, caching, authentication, etc.

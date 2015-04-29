@@ -1,4 +1,4 @@
-package CommandBus
+package commandbus
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ type TestCommand2 struct{}
 func TestNew(t *testing.T) {
 	bus := New()
 	if bus == nil {
-		t.Log("New CommandBus not created!")
+		t.Log("New command bus not created!")
 		t.Fail()
 	}
 }

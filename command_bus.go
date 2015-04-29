@@ -1,4 +1,4 @@
-package CommandBus
+package commandbus
 
 import (
 	"reflect"
@@ -57,15 +57,14 @@ func (bus commandBus) Handle(cmd interface{}) {
 
 func (bus commandBus) getNext(index int) HandlerFunc {
 	if len(bus.middlewares) >= (index + 1) {
-		middleware := bus.middlewares[index]
 		return func(cmd interface{}) {
+			middleware := bus.middlewares[index]
 			middleware.function(cmd, bus.getNext(index+1))
 		}
 	}
 
 	return func(cmd interface{}) {
-		handler := bus.GetHandler(cmd)
-		if handler != nil {
+		if handler := bus.GetHandler(cmd); handler != nil {
 			handler(cmd)
 		}
 	}
