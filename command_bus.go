@@ -64,23 +64,16 @@ func (bus commandBus) getNext(index int) HandlerFunc {
 	}
 
 	return func(cmd interface{}) {
-		handler := bus.getHandler(cmd)
+		handler := bus.GetHandler(cmd)
 		if handler != nil {
 			handler(cmd)
 		}
 	}
 }
 
-func (bus commandBus) getHandler(cmd interface{}) HandlerFunc {
-	t := reflect.TypeOf(cmd)
-
-	for kind, handler := range bus.handlers {
-		if t == kind {
-			return handler
-		}
-	}
-
-	return nil
+func (bus commandBus) GetHandler(cmd interface{}) HandlerFunc {
+	handler, _ := bus.handlers[reflect.TypeOf(cmd)]
+	return handler
 }
 
 func New() *commandBus {
