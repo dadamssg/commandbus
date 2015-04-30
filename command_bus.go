@@ -29,33 +29,33 @@ func (slice byPriority) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
-type commandBus struct {
+type CommandBus struct {
 	handlers    map[reflect.Type]HandlerFunc
 	middlewares []middleware
 	lock        sync.Mutex
 }
 
-func (bus *commandBus) RegisterHandler(cmd interface{}, handler HandlerFunc) {
+func (bus *CommandBus) RegisterHandler(cmd interface{}, handler HandlerFunc) {
 	bus.lock.Lock()
 	defer bus.lock.Unlock()
 	bus.handlers[reflect.TypeOf(cmd)] = handler
 }
 
-func (bus *commandBus) AddMiddleware(priority int, function middlewareFunc) {
+func (bus *CommandBus) AddMiddleware(priority int, function middlewareFunc) {
 	bus.lock.Lock()
 	defer bus.lock.Unlock()
 	bus.middlewares = append(bus.middlewares, middleware{function: function, priority: priority})
 	sort.Sort(byPriority(bus.middlewares))
 }
 
-func (bus commandBus) Handle(cmd interface{}) {
+func (bus CommandBus) Handle(cmd interface{}) {
 	bus.lock.Lock()
 	defer bus.lock.Unlock()
 	handler := bus.getNext(0)
 	handler(cmd)
 }
 
-func (bus commandBus) getNext(index int) HandlerFunc {
+func (bus CommandBus) getNext(index int) HandlerFunc {
 	if len(bus.middlewares) >= (index + 1) {
 		return func(cmd interface{}) {
 			middleware := bus.middlewares[index]
@@ -70,13 +70,13 @@ func (bus commandBus) getNext(index int) HandlerFunc {
 	}
 }
 
-func (bus commandBus) GetHandler(cmd interface{}) HandlerFunc {
+func (bus CommandBus) GetHandler(cmd interface{}) HandlerFunc {
 	handler, _ := bus.handlers[reflect.TypeOf(cmd)]
 	return handler
 }
 
-func New() *commandBus {
-	return &commandBus{
+func New() *CommandBus {
+	return &CommandBus{
 		handlers:    make(map[reflect.Type]HandlerFunc),
 		middlewares: make([]middleware, 0),
 	}
